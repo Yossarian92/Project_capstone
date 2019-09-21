@@ -6,14 +6,16 @@ Based on original code by Anirban Kar: https://github.com/thecodacus/Face-Recogn
 Developed by Marcelo Rovai - MJRoBot.org @ 21Feb18  
 '''
 
+from datetime import datetime
 import cv2
 import numpy as np
 import os
 import subprocess
+from socket import *
+import json
 
 
-
-
+#---------------------------------Face_Recognition----------------------------------
 recognizer = cv2.face.LBPHFaceRecognizer_create()
 recognizer.read('trainer/trainer.yml')
 cascadePath = "haarcascade_frontalface_default.xml"
@@ -39,6 +41,21 @@ minH = 0.1*cam.get(4)
 cnt = 0
 subprocess.call('amixer -c 1 cset numid=2 off', shell=True)
 
+timeList = {}
+timeList['AT'] = {}
+timeList['LT'] = {}
+
+#------------------------------------------------------------------------------------
+
+#--------------------------------------Socket----------------------------------------
+HOST='210.115.230.129'
+
+c = socket(AF_INET, SOCK_STREAM)
+print('connecting....')
+c.connect((HOST,65000))
+print('ok')
+
+#------------------------------------------------------------------------------------
 while True:
     ret, img =cam.read()
 
@@ -56,6 +73,8 @@ while True:
         subprocess.call('amixer -c 1 cset numid=2 off', shell=True)
         cnt = 0
 
+
+
     for(x,y,w,h) in faces:
 
         cv2.rectangle(img, (x,y), (x+w,y+h), (0,255,0), 2)
@@ -66,7 +85,10 @@ while True:
         if(confidence <= 50):
             id = names[id]
             confidence = "  {0}%".format(round(100 - confidence))
-
+            timestamp = str(datetime.now())[:-7]
+            asdf = {'name': 'kelvin','access_date': timestamp}
+            data = json.dumps(asdf)
+            c.send(str.encode(data))
             subprocess.call('amixer -c 1 cset numid=2 on', shell=True)
 
         else:
@@ -80,11 +102,13 @@ while True:
 
     cv2.imshow('camera',img) 
 
+
     k = cv2.waitKey(10) & 0xff # Press 'ESC' for exiting video
     if k == 27:
         break
 
 # Do a bit of cleanup
 print("\n [INFO] Exiting Program and cleanup stuff")
+c.close()
 cam.release()
 cv2.destroyAllWindows()
