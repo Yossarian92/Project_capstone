@@ -41,19 +41,19 @@ minH = 0.1*cam.get(4)
 cnt = 0
 subprocess.call('amixer -c 1 cset numid=2 off', shell=True)
 
-timeList = {}
-timeList['AT'] = {}
-timeList['LT'] = {}
+# AT = {}; AT['name'] = []; AT['access_time'] = []
+# LT = {}; LT['name'] = []; LT['leaving_time'] = []
+# UT = {}
 
 #------------------------------------------------------------------------------------
 
 #--------------------------------------Socket----------------------------------------
-HOST='210.115.230.129'
+# HOST='210.115.230.129'
 
-c = socket(AF_INET, SOCK_STREAM)
-print('connecting....')
-c.connect((HOST,65000))
-print('ok')
+# c = socket(AF_INET, SOCK_STREAM)
+# print('connecting....')
+# c.connect((HOST,65000))
+# print('ok')
 
 #------------------------------------------------------------------------------------
 while True:
@@ -85,20 +85,36 @@ while True:
         if(confidence <= 50):
             id = names[id]
             confidence = "  {0}%".format(round(100 - confidence))
-            timestamp = str(datetime.now())[:-7]
-            asdf = {'name': 'kelvin','access_date': timestamp}
-            data = json.dumps(asdf)
-            c.send(str.encode(data))
             subprocess.call('amixer -c 1 cset numid=2 on', shell=True)
 
         else:
             id = "unknown"
             confidence = "  {0}%".format(round(100 - confidence))
-        
+
+        # if id in names:
+            # timestamp = str(datetime.now())[:-7]
+            # if id not in AT['name']:
+                # AT['name'].append(id)
+                # AT['access_time'].append(timestamp)
+                # data = json.dumps({'name': AT['name'][count], 'access_time': AT['access_time'][count]})
+                # c.send(str.encode(data))
+                # count = count + 1
+
+        # else:
+            # UT['access_time'] = timestamp
+            # data = json.dumps(UT)
+            # c.send(str.encode(data))
+
+        # if len(faces)!=0:
+            # LT['name'].append(id)
+            # LT['leaving_time'].append(timestamp)
+
+        # if id in LT['name'] and len(faces)==0:
+            # data = json.dumps(LT)
+            # c.send(str.encode(data))
+
         cv2.putText(img, str(id), (x+5,y-5), font, 1, (255,255,255), 2)
-        cv2.putText(img, str(confidence), (x+5,y+h-5), font, 1, (255,255,0), 1)  
-
-
+        cv2.putText(img, str(confidence), (x+5,y+h-5), font, 1, (255,255,0), 1)
 
     cv2.imshow('camera',img) 
 
@@ -109,6 +125,6 @@ while True:
 
 # Do a bit of cleanup
 print("\n [INFO] Exiting Program and cleanup stuff")
-c.close()
+# c.close()
 cam.release()
 cv2.destroyAllWindows()
