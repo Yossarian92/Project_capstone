@@ -13,6 +13,7 @@ import os
 import subprocess
 from socket import *
 import json
+import requests
 
 
 #---------------------------------Face_Recognition----------------------------------
@@ -39,22 +40,20 @@ minW = 0.1*cam.get(3)
 minH = 0.1*cam.get(4)
 
 cnt = 0
+count = 0
 subprocess.call('amixer -c 1 cset numid=2 off', shell=True)
 
-# AT = {}; AT['name'] = []; AT['access_time'] = []
-# LT = {}; LT['name'] = []; LT['leaving_time'] = []
-# UT = {}
-
-#------------------------------------------------------------------------------------
+AT = {}; AT['name'] = '';
+LT = {}; LT['name'] = '';
+UT = {};
 
 #--------------------------------------Socket----------------------------------------
-# HOST='210.115.230.129'
+HOST='210.115.230.129'
 
-# c = socket(AF_INET, SOCK_STREAM)
-# print('connecting....')
-# c.connect((HOST,65000))
-# print('ok')
-
+c = socket(AF_INET, SOCK_STREAM)
+print('connecting....')
+c.connect((HOST,65000))
+print('ok')
 #------------------------------------------------------------------------------------
 while True:
     ret, img =cam.read()
@@ -91,30 +90,37 @@ while True:
             id = "unknown"
             confidence = "  {0}%".format(round(100 - confidence))
 
-        # if id in names:
-            # timestamp = str(datetime.now())[:-7]
-            # if id not in AT['name']:
-                # AT['name'].append(id)
-                # AT['access_time'].append(timestamp)
-                # data = json.dumps({'name': AT['name'][count], 'access_time': AT['access_time'][count]})
-                # c.send(str.encode(data))
-                # count = count + 1
+        timestamp = str(datetime.now())[:-7]
+        if id in names:
+            if id != AT['name']:
+                AT['name'] = id
+                AT['access_time'] = timestamp
+                data = json.dumps({'name': AT['name'], 'access_time': AT['access_time'], 'type':'AT'})
+                c.send(str.encode(data))
 
-        # else:
-            # UT['access_time'] = timestamp
-            # data = json.dumps(UT)
-            # c.send(str.encode(data))
+        else:
+            UT['name'] = id
+            UT['access_time'] = timestamp
+            data = json.dumps({'name': UT['name'], 'access_time': UT['access_time'], 'type':'AT'})
+            c.send(str.encode(data))
+            cv2.imwrite('unknown.png',img, params=[cv2.IMWRITE_PNG_COMPRESSION,0])
+            url = 'http://210.115.230.129/img_store.php'
+            files = {'file': open('unknown.png', 'rb')}
+            r = requests.post(url, files=files)
+            
 
-        # if len(faces)!=0:
-            # LT['name'].append(id)
-            # LT['leaving_time'].append(timestamp)
-
-        # if id in LT['name'] and len(faces)==0:
-            # data = json.dumps(LT)
-            # c.send(str.encode(data))
+        if len(faces)!=0:
+            LT['name'] = id
+            LT['leaving_time'] = timestamp
 
         cv2.putText(img, str(id), (x+5,y-5), font, 1, (255,255,255), 2)
         cv2.putText(img, str(confidence), (x+5,y+h-5), font, 1, (255,255,0), 1)
+
+    if id == LT['name'] and len(faces)==0:
+        data = json.dumps({'name': LT['name'], 'leaving_time': LT['leaving_time'], 'type':'LT'})
+        c.send(str.encode(data))
+        LT['name'] = ''
+        AT['name'] = ''
 
     cv2.imshow('camera',img) 
 
@@ -125,6 +131,6 @@ while True:
 
 # Do a bit of cleanup
 print("\n [INFO] Exiting Program and cleanup stuff")
-# c.close()
+c.close()
 cam.release()
 cv2.destroyAllWindows()
