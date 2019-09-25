@@ -104,10 +104,14 @@ while True:
             data = json.dumps({'name': UT['name'], 'access_time': UT['access_time'], 'type':'AT'})
             c.send(str.encode(data))
             cv2.imwrite('unknown.png',img, params=[cv2.IMWRITE_PNG_COMPRESSION,0])
-            url = 'http://210.115.230.129/img_store.php'
-            files = {'file': open('unknown.png', 'rb')}
-            r = requests.post(url, files=files)
-            
+            try:
+                url = 'http://210.115.230.129/img_store.php'
+                files = {'myfile': open('unknown.png', 'rb')}
+                r = requests.post(url, files=files)
+                print(r.text)
+            except:
+                print("")
+
 
         if len(faces)!=0:
             LT['name'] = id
