@@ -19,8 +19,9 @@ import requests
 #---------------------------------Face_Recognition----------------------------------
 recognizer = cv2.face.LBPHFaceRecognizer_create()
 recognizer.read('trainer/trainer.yml')
-cascadePath = "haarcascade_frontalface_default.xml"
-faceCascade = cv2.CascadeClassifier(cascadePath);
+
+faceCascade = cv2.CascadeClassifier('haarcascade_frontalface_alt2.xml')
+
 
 font = cv2.FONT_HERSHEY_SIMPLEX
 
@@ -40,7 +41,6 @@ minW = 0.1*cam.get(3)
 minH = 0.1*cam.get(4)
 
 cnt = 0
-count = 0
 subprocess.call('amixer -c 1 cset numid=2 off', shell=True)
 
 AT = {}; AT['name'] = '';
@@ -75,22 +75,23 @@ while True:
 
 
     for(x,y,w,h) in faces:
-
-        cv2.rectangle(img, (x,y), (x+w,y+h), (0,255,0), 2)
-
         id, confidence = recognizer.predict(gray[y:y+h,x:x+w])
 
         # Check if confidence is less them 100 ==> "0" is perfect match 
-        if(confidence <= 50):
+        if confidence>=4 and confidence <= 85:
             id = names[id]
-            confidence = "  {0}%".format(round(100 - confidence))
+            # confidence = "  {0}%".format(round(100 - confidence))
             subprocess.call('amixer -c 1 cset numid=2 on', shell=True)
 
         else:
             id = "unknown"
-            confidence = "  {0}%".format(round(100 - confidence))
+            # confidence = "  {0}%".format(round(100 - confidence))
 
-        timestamp = str(datetime.now())[:-7]
+        cv2.rectangle(img, (x,y), (x+w,y+h), (255,0,0), 2)
+
+
+
+        timestamp = str(datetime.now())[:-7].replace(" ","_")
         if id in names:
             if id != AT['name']:
                 AT['name'] = id
@@ -103,14 +104,14 @@ while True:
             UT['access_time'] = timestamp
             data = json.dumps({'name': UT['name'], 'access_time': UT['access_time'], 'type':'AT'})
             c.send(str.encode(data))
-            cv2.imwrite('unknown.png',img, params=[cv2.IMWRITE_PNG_COMPRESSION,0])
+            cv2.imwrite("bin/"+UT['name']+"_"+UT['access_time']+".png",img, params=[cv2.IMWRITE_PNG_COMPRESSION,0])
             try:
                 url = 'http://210.115.230.129/img_store.php'
-                files = {'myfile': open('unknown.png', 'rb')}
+                files = {'myfile': open("bin/"+UT['name']+"_"+UT['access_time']+".png", 'rb')}
                 r = requests.post(url, files=files)
-                print(r.text)
+
             except:
-                print("")
+                print("pic sending Error")
 
 
         if len(faces)!=0:
@@ -118,7 +119,7 @@ while True:
             LT['leaving_time'] = timestamp
 
         cv2.putText(img, str(id), (x+5,y-5), font, 1, (255,255,255), 2)
-        cv2.putText(img, str(confidence), (x+5,y+h-5), font, 1, (255,255,0), 1)
+        # cv2.putText(img, str(confidence), (x+5,y+h-5), font, 1, (255,255,0), 1)
 
     if id == LT['name'] and len(faces)==0:
         data = json.dumps({'name': LT['name'], 'leaving_time': LT['leaving_time'], 'type':'LT'})
