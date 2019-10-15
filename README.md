@@ -8,4 +8,4 @@
 or
 
 
-스마트카트
+스마트카트 with barcode scanner
