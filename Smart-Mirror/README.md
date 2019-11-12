@@ -1,3 +1,44 @@
-##  Smart-Mirror
----
-스마트미러
+# Smart-Mirror
+Raspberry powered mirror which can display the news, weather, and time.
+
+## Installation and Updating
+### Code
+If you have [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) installed, clone the repository.
+
+```
+git clone git@github.com:HackerHouseYT/Smart-Mirror.git
+```
+
+**Alternatively, you can download a zip file containing the project (green button on the repository page)**
+
+Navigate to the folder for the repository
+
+```
+cd Smart-Mirror
+```
+
+### Install your dependencies 
+make sure you have [pip](https://pip.pypa.io/en/stable/installing/) installed before doing this
+
+```
+sudo pip install Pillow
+```
+
+```
+sudo pip install requests
+```
+
+```
+sudo pip install feedparser
+```
+
+```
+sudo apt-get install python-imaging-tk
+```
+
+## Running
+To run the application run the following command in this folder
+
+```
+python smartmirror.py
+```
