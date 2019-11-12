@@ -1,4 +1,14 @@
 ## Project_capstone
+
+## Installation and Updating
+### Code
+If you have [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) installed, clone the repository.
+
+```
+git clone git@github.com:HackerHouseYT/Smart-Mirror.git
+```
+
+**Alternatively, you can download a zip file containing the project (green button on the repository page)**
 ---
 캡스톤디자인 프로젝트입니다.
 
