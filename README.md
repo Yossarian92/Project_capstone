@@ -9,6 +9,7 @@ git clone https://github.com/Yossarian92/Project_capstone.git
 ```
 
 **Alternatively, you can download a zip file containing the project (green button on the repository page)**
+
 ---
 캡스톤디자인 프로젝트입니다.
 
