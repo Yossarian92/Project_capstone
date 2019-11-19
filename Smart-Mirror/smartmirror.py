@@ -295,10 +295,10 @@ class ButtonEvent(Frame):
     def __init__(self, parent, *args, **kwargs):
         Frame.__init__(self, parent, bg='black')
         self.button1 = Button(self, text='X', font=('Helvetica', 10), command = quit, fg='white', bg='black')
-        self.button2 = Button(self, text='C', font=('Helvetica', 10), command = cMR, fg='white', bg='black')
+        #self.button2 = Button(self, text='C', font=('Helvetica', 10), command = cMR, fg='white', bg='black')
         #self.button2 = Button(self, text='C', font=('Helvetica', 10), command = face_recog, fg='white', bg='black')
 		
-        self.button2.pack(side=TOP, anchor=E)
+        #self.button2.pack(side=TOP, anchor=E)
         self.button1.pack(side=TOP, anchor=E)
 
 def face_recog():
