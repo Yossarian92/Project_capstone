@@ -20,7 +20,7 @@ import requests
 recognizer = cv2.face.LBPHFaceRecognizer_create()
 recognizer.read('trainer/trainer.yml')
 
-faceCascade = cv2.CascadeClassifier('haarcascade_frontalface_alt2.xml')
+faceCascade = cv2.CascadeClassifier('haarcascade_frontalface_defualt.xml')
 
 
 font = cv2.FONT_HERSHEY_SIMPLEX
