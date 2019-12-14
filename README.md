@@ -18,3 +18,4 @@ git clone https://github.com/Yossarian92/Project_capstone.git
 ---
 
 스마트카트 with barcode scanner
+---
